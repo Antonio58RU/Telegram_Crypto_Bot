@@ -1,7 +1,6 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
-from aiogram.types import BotCommand
 
 from config import TOKEN
 from app.handlers import router
