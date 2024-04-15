@@ -12,22 +12,22 @@ router = Router()
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    r = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC&tsyms=USD,EUR')
+  
+    await message.answer("Меню", reply_markup=kb.mainRp)
+    
+    
+@router.message(F.text == 'Статистика Binance')
+async def get_stats(message: Message):
+    
+    r = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH&tsyms=USD,EUR')
     json_data = r.json()
 
     price = json_data["RAW"]["BTC"]["USD"]["PRICE"]
+    price2 = json_data["RAW"]["ETH"]["USD"]["PRICE"]
     
-    await message.answer(f"Цена BTC в USD: {price}", reply_markup=kb.main)
-    
-@router.message(Command('help'))
-async def get_help(message: Message):
-    await message.answer('Это команда /help')
+    await message.answer(f"🏦CryptoStats\n\nBTC:={price}\nETH:={price2}",reply_markup=kb.mainIn)
     
  
-@router.callback_query(F.data == 'catalog')     
-async def catalog(callback: CallbackQuery):
-    await callback.answer('Вы выбрали каталог', show_alert=True)
-    await callback.message.edit_text('Колбек', reply_markup= await kb.inline_cars())
-    
+
 
     

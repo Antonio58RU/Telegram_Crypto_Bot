@@ -3,8 +3,12 @@ from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
 
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
-main = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='Маркет'),KeyboardButton(text='Профиль')],
-    [KeyboardButton(text='О сервисе'),KeyboardButton(text='Vip возможности')]
+mainRp = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text='Статистика Binance'),KeyboardButton(text='Профиль')],
+    [KeyboardButton(text='О сервисе'),KeyboardButton(text='Получить Vip')]
 ])
 
+mainIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Обновить', callback_data='update'),
+                                               InlineKeyboardButton(text='Калькулятор крипты', callback_data='calculator')],
+                                                [InlineKeyboardButton(text='График(24)', callback_data='graphic'),
+                                                InlineKeyboardButton(text='Продажа', callback_data='sell')]])
