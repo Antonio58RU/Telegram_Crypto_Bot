@@ -16,5 +16,7 @@ mainIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='⏳О
 profileIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='⚙️Настройки', callback_data='settings')],
                                                 [InlineKeyboardButton(text='📌Помощь', callback_data='support')]])
 
-statsFullIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='⚙️Настройки', callback_data='settings')],
-                                                [InlineKeyboardButton(text='📌Помощь', callback_data='support')]])
+statsFullIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Назад', callback_data='backStatsFull')]])
+
+langIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Русский', callback_data='setRussia')],
+                                                [InlineKeyboardButton(text='English', callback_data='setEnglish')]])
