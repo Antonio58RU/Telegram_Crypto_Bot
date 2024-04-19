@@ -2,9 +2,9 @@ import os
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
+from aiogram.methods import DeleteWebhook
 from dotenv import load_dotenv
 
-from config import TOKEN
 from app.handlers import router
 
 from bot_cmds_list import commands
@@ -13,6 +13,7 @@ from bot_cmds_list import commands
 async def main():
     load_dotenv()
     bot = Bot(token = os.getenv('TOKEN'))
+    await bot(DeleteWebhook(drop_pending_updates=True))
     dp = Dispatcher()
     dp.include_router(router)
     await bot.set_my_commands(commands=commands)
