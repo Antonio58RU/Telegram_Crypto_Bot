@@ -1,6 +1,6 @@
 from aiogram import F, Router
 from aiogram.filters import CommandStart
-from aiogram.types import Message, CallbackQuery, InputFile 
+from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
@@ -44,7 +44,7 @@ async def StatsFull_stats(message: Message, state: FSMContext):
     await state.clear()
     
 @router.callback_query(F.data == 'backStatsFull')
-async def get_stats(callback: CallbackQuery):
+async def back_statsFull(callback: CallbackQuery):
     await callback.answer('')
     await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn, parse_mode='html')
 
@@ -64,7 +64,7 @@ async def support(callback: CallbackQuery):
        
 @router.message(F.text == '📕 О сервисе')
 async def get_info(message: Message):
-    photo = InputFile('photoInfo.jpeg')
+    photo = FSInputFile('Images/photoInfo.jpeg')
     await message.answer_photo(photo=photo, caption='<b>Данный сервис позволяет быть в курсе актуальных цен на криптовалюты, получать подробную статистику о рынке, получать прогнозы продаж и использовать удобный калькулятор для расчета криптовалюты - все это доступно прямо в Telegram. Благодаря этому сервису вы сможете быть в курсе последних изменений на рынке и принимать осознанные решения в области криптовалютных инвестиций.</b>', parse_mode='html')
     
 @router.message(F.text == '👑 Получить Vip')
