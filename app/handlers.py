@@ -28,7 +28,7 @@ async def get_stats(message: Message):
 @router.callback_query(F.data == 'updateStats')
 async def update_stats(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.edit_text(get_messageStats(), reply_markup=kb.mainIn, parse_mode='html')
+    await callback.message.edit_text(get_messageStats(), reply_markup=await kb.mainIn, parse_mode='html')
     
 @router.callback_query(F.data == 'getStatsFull')
 async def get_statsFull(callback: CallbackQuery, state: FSMContext):
@@ -40,22 +40,22 @@ async def get_statsFull(callback: CallbackQuery, state: FSMContext):
 async def StatsFull_stats(message: Message, state: FSMContext):
     await state.update_data(nameCrypto = message.text)
     data = await state.get_data()
-    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{data['nameCrypto']}/USD/latest.png?ts=1713464400', caption=get_messageStatsFull(data), reply_markup=kb.statsFullIn, parse_mode='html')
+    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{data['nameCrypto']}/USD/latest.png?ts=1713464400', caption=get_messageStatsFull(data), reply_markup=await kb.statsFullIn, parse_mode='html')
     await state.clear()
     
 @router.callback_query(F.data == 'backStatsFull')
 async def back_statsFull(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn, parse_mode='html')
+    await callback.message.answer(get_messageStats(), reply_markup=await kb.mainIn, parse_mode='html')
 
 @router.message(F.text == '💼 Профиль')
 async def get_statsProfil(message: Message):
-    await message.answer(f'<b>Логин:</b> {message.from_user.full_name}\n<b>Статус:</b> Vip\n<b>Зарегистрирован:</b> 01-01-1888', reply_markup=kb.profileIn, parse_mode='html')
+    await message.answer(f'<b>Логин:</b> {message.from_user.full_name}\n<b>Статус:</b> Vip\n<b>Зарегистрирован:</b> 01-01-1888', reply_markup=await kb.profileIn, parse_mode='html')
 
 @router.callback_query(F.data == 'settings')
 async def settings(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.answer(text='<b>Выберите язык</b>', reply_markup=kb.langIn, parse_mode='html')
+    await callback.message.answer(text='<b>Выберите язык</b>', reply_markup=await kb.langIn, parse_mode='html')
      
 @router.callback_query(F.data == 'support')
 async def support(callback: CallbackQuery):
