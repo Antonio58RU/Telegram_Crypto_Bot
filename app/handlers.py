@@ -5,6 +5,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 import app.keybords as kb
+import database.requests as rq
+
 
 import requests 
 
@@ -19,6 +21,7 @@ class StatsFull(StatesGroup):
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
+    await rq.set_user(message.from_user.id)
     await message.answer('@cryptostats58_bot: Будьте в курсе цен, получайте статистику, прогнозы продаж и калькулятор крипты прямо в Telegram.', reply_markup=kb.mainRp)
       
 @router.message(F.text == '🏦 Статистика Binance')
@@ -50,7 +53,8 @@ async def back_statsFull(callback: CallbackQuery):
 
 @router.message(F.text == '💼 Профиль')
 async def get_statsProfil(message: Message):
-    await message.answer(f'<b>Логин:</b> {message.from_user.full_name}\n<b>Статус:</b> Vip\n<b>Зарегистрирован:</b> 01-01-1888', reply_markup=kb.profileIn, parse_mode='html')
+    user = await rq.get_user(message.from_user.id)
+    await message.answer(f'<b>Логин:</b> {message.from_user.full_name}\n<b>Статус:</b> {premiumStatus(user.premium)}\n<b>Зарегистрирован:</b> {user.registr_date}', reply_markup=kb.profileIn, parse_mode='html')
 
 @router.callback_query(F.data == 'settings')
 async def settings(callback: CallbackQuery):
@@ -69,7 +73,8 @@ async def get_info(message: Message):
     
 @router.message(F.text == '👑 Получить Vip')
 async def get_vip(message: Message):
-    await message.answer('ТЫ ВИП!')
+    await rq.update_user_premium_status(message.from_user.id)
+    await message.answer('Ты премиум!')
        
     
  
@@ -102,3 +107,9 @@ def get_messageStatsFull(data):
     
     messageStatsFull_text = f'<b>График за 7 дней</b>\n\n<b>Название: </b>{fromsymbol}\n<b>Маркет: </b>{market}\n<b>Цена: </b>{round(price, 2)}$\n<b>24ч: </b>{change24h}'
     return messageStatsFull_text
+
+
+def premiumStatus(premium: bool):
+    if(premium == False):    
+        return 'Стандарт'
+    return 'Premium'

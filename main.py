@@ -5,6 +5,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.methods import DeleteWebhook
 from dotenv import load_dotenv
 
+from database.models import async_main
+
 from app.handlers import router
 
 from bot_cmds_list import commands
@@ -12,6 +14,7 @@ from bot_cmds_list import commands
 
 async def main():
     load_dotenv()
+    await async_main()
     bot = Bot(token = os.getenv('TOKEN'))
     await bot(DeleteWebhook(drop_pending_updates=True))
     dp = Dispatcher()
