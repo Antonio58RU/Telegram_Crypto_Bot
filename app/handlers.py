@@ -3,7 +3,6 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-import asyncio
 
 import app.keybords as kb
 import database.requests as rq
@@ -46,7 +45,10 @@ async def get_statsFull(callback: CallbackQuery, state: FSMContext):
 async def StatsFull_stats(message: Message, state: FSMContext):
     await state.update_data(nameCrypto = message.text)
     data = await state.get_data()
-    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{data['nameCrypto']}/USD/latest.png?ts=1713464400', caption=get_messageStatsFull(data), reply_markup=kb.statsFullIn, parse_mode='html')
+    crypto_name = data['nameCrypto']
+
+    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{crypto_name}/USD/latest.png?ts=1713464400', caption= await get_messageStatsFull(crypto_name, message), reply_markup=kb.statsFullIn, parse_mode='html')
+        
     await state.clear()
  
 @router.callback_query(F.data == 'calculator')
@@ -59,20 +61,18 @@ async def get_nameCrypto(callback: CallbackQuery, state: FSMContext):
 async def get_nameCrypto_two(message: Message, state: FSMContext):
     await state.update_data(name_and_amount = message.text)
     data = await state.get_data()
-    crypto_name, crypto_value = data['name_and_amount'].split('-')
     
-    r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD')
-    json_data = r.json()
+    
+    
     try:
+        crypto_name, crypto_value = data['name_and_amount'].split('-')
+        r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD')
+        json_data = r.json()
         price = json_data["RAW"][crypto_name]["USD"]["PRICE"]
-    except KeyError:  
-        await message.answer(text='Некорректные данные1') 
-        #asyncio.run(get_nameCrypto)
-    
-    try:
         crypto_value = float(crypto_value)
-    except ValueError:  
-        await message.answer(text='Некорректные данные2') 
+    except:  
+         await message.answer(text='Некорректные данные, повторите ввод!') 
+    
         
     
     await message.answer(f'⌨️ <b>Калькулятор</b>\n\nЦена {crypto_name}: {crypto_value} = {round(crypto_value * float(price),5)}$', parse_mode='html', reply_markup=kb.calculatorIn)
@@ -161,17 +161,20 @@ def get_messageStats():
         messageStats_text += f"<b>{currency}:=</b><i>{price}$</i>, <b>24h:</b> <i>{change24h}%</i>\n"
     return messageStats_text
 
-def get_messageStatsFull(data):
-    nameCrypto = data['nameCrypto']
+async def get_messageStatsFull(crypto_name, message: Message):
     
-    r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={nameCrypto}&tsyms=USD')
+    
+    r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD')
     json_data = r.json()
 
-    fromsymbol = json_data["RAW"][nameCrypto]["USD"]["FROMSYMBOL"]
-    market = json_data["RAW"][nameCrypto]["USD"]["MARKET"]
-    price = json_data["RAW"][nameCrypto]["USD"]["PRICE"]
-    change24h = json_data["RAW"][nameCrypto]["USD"]["CHANGEPCT24HOUR"]
-    
+    try:
+        fromsymbol = json_data["RAW"][crypto_name]["USD"]["FROMSYMBOL"]
+        market = json_data["RAW"][crypto_name]["USD"]["MARKET"]
+        price = json_data["RAW"][crypto_name]["USD"]["PRICE"]
+        change24h = json_data["RAW"][crypto_name]["USD"]["CHANGEPCT24HOUR"]
+    except:
+        await message.answer('Некорректные данные, повторите ввод!')
+
     messageStatsFull_text = f'<b>График за 7 дней</b>\n\n<b>Название: </b>{fromsymbol}\n<b>Маркет: </b>{market}\n<b>Цена: </b>{round(price, 2)}$\n<b>24ч: </b>{change24h}'
     return messageStatsFull_text
 
