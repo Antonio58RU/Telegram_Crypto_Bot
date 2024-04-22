@@ -16,6 +16,9 @@ router = Router()
 class StatsFullSt(StatesGroup):
     nameCrypto = State()
     
+class Graphic24St(StatesGroup):
+    nameCrypto = State()
+    
 class CalculatorSt(StatesGroup):
     name_and_amount = State()
  
@@ -39,7 +42,7 @@ async def update_stats(callback: CallbackQuery):
 async def get_statsFull(callback: CallbackQuery, state: FSMContext):
     await callback.answer('')
     await state.set_state(StatsFullSt.nameCrypto)
-    await callback.message.answer('Введите название криптовалюты для получения её полной информации.', parse_mode='html')
+    await callback.message.answer('Введите название криптовалюты.', parse_mode='html')
     
 @router.message(StatsFullSt.nameCrypto)
 async def StatsFull_stats(message: Message, state: FSMContext):
@@ -132,16 +135,54 @@ async def get_info(message: Message):
     
     
     
-@router.message(F.text == '👑 Получить Vip')
-async def get_vip(message: Message):
-    await rq.update_user_premium_status(message.from_user.id)
-    await message.answer('Ты премиум!')
+@router.message(F.text == '👑 Премиум функционал')
+async def premium_func(message: Message):
+    user = await rq.get_user(message.from_user.id)
+    if(user.premium == True):
+        await message.answer('👑 <b>Премиум функционал</b>', reply_markup=kb.premiumIn, parse_mode='html')
+    else:
+        await message.answer('Приобретите премиум доступ чтобы пользоваться данными функционалом', reply_markup=kb.premiumBuyIn)
        
+@router.callback_query(F.data == 'buyPremium')
+async def buy_premium(callback: CallbackQuery):
+    await callback.answer('')
+    await rq.update_user_premium_status(callback.from_user.id)
+    await callback.message.answer(text='Премиум куплен!')
     
- 
+@router.callback_query(F.data == 'graphic24')
+async def graphic24(callback: CallbackQuery, state: FSMContext):
+    await callback.answer('')
+    await state.set_state(Graphic24St.nameCrypto)
+    await callback.message.answer('Введите название криптовалюты.', parse_mode='html')
     
+@router.message(Graphic24St.nameCrypto)
+async def graphic24_two(message: Message, state: FSMContext):
+    await state.update_data(nameCrypto = message.text)
+    data = await state.get_data()
+    crypto_name = data['nameCrypto']
     
+    url = f"https://images.cryptocompare.com/sparkchart/{crypto_name}/USD/latest.png?ts=1713464400"
     
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            pass
+        else:
+            raise ValueError("Произошла ошибка!")
+    except:
+        await message.answer(text='Некорректные данные, повторите ввод!') 
+    
+    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{crypto_name}/USD/latest.png?ts=1713464400', reply_markup=kb.graphic24In, parse_mode='html')
+    await state.clear()
+            
+@router.callback_query(F.data == 'backPremium')
+async def backPremium(callback: CallbackQuery):
+    await callback.answer('')
+    user = await rq.get_user(callback.from_user.id)
+    if(user.premium == True):
+        await callback.message.answer('👑 <b>Премиум функционал</b>', reply_markup=kb.premiumIn, parse_mode='html')
+    else:
+        await callback.message.answer('Приобретите премиум доступ чтобы пользоваться данными функционалом', reply_markup=kb.premiumBuyIn)
     
 def get_messageStats():
     
@@ -181,4 +222,4 @@ async def get_messageStatsFull(crypto_name, message: Message):
 def premiumStatus(premium: bool):
     if(premium == False):    
         return 'Стандарт'
-    return 'Premium'
+    return 'Премиум'
