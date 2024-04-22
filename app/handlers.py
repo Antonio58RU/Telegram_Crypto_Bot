@@ -1,5 +1,5 @@
 from aiogram import F, Router
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
@@ -28,6 +28,14 @@ async def cmd_start(message: Message, state: FSMContext):
     await rq.set_user(message.from_user.id)
     await message.answer('@cryptostats58_bot: Будьте в курсе цен, получайте статистику, прогнозы продаж и калькулятор крипты прямо в Telegram.', reply_markup=kb.mainRp)
     await state.clear()
+    
+@router.message(Command('settings'))
+async def cmd_start(message: Message):
+     await message.answer(text='⚙️ <b>Настройки</b>', reply_markup=kb.settingsCmdIn, parse_mode='html')
+     
+@router.message(Command('help'))
+async def cmd_start(message: Message):
+     await message.answer(text='/start - Запуск бота\n/setting - Настройки\n/help Помощь\n\nhttps://t.me/AntonBog123')
      
 @router.message(F.text == '🏦 Статистика Binance')
 async def get_stats(message: Message):
@@ -172,7 +180,9 @@ async def graphic24_two(message: Message, state: FSMContext):
     except:
         await message.answer(text='Некорректные данные, повторите ввод!') 
     
-    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{crypto_name}/USD/latest.png?ts=1713464400', reply_markup=kb.graphic24In, parse_mode='html')
+  
+
+    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{crypto_name}/USD/latest.png?ts=1713464400', caption='<b>График за 24часа</b>', reply_markup=kb.graphic24In, parse_mode='html')
     await state.clear()
             
 @router.callback_query(F.data == 'backPremium')
@@ -186,7 +196,7 @@ async def backPremium(callback: CallbackQuery):
     
 def get_messageStats():
     
-    cryptocurrencies = ["BTC", "ETH", "USDT", "BNB", "SOL", "USDC", "STETH", "XRP", "DOGE", "TON"]
+    cryptocurrencies = ["BTC", "ETH", "USDT", "BNB", "SOL"]
     fsyms = ','.join(cryptocurrencies)
 
     url = f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={fsyms}&tsyms=USD'

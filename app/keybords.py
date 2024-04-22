@@ -38,4 +38,11 @@ premiumBuyIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=
 
 graphic24In = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='✏️ Повторить', callback_data='graphic24')],
                                                     [InlineKeyboardButton(text='👈 Назад', callback_data='backPremium')]])
-                                         
+
+cryptoRp = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text='BTC'),KeyboardButton(text='ETH')],
+    [KeyboardButton(text='USDT'),KeyboardButton(text='BNB')]
+], resize_keyboard=True, input_field_placeholder='Выберите криптовалюту')
+
+
+settingsCmdIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='😛 Язык', callback_data='setLang')]])
