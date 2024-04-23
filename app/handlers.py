@@ -10,8 +10,6 @@ import database.requests as rq
 
 import requests 
 
-import ccxt
-import pandas as pd
 import matplotlib.pyplot as plt
 
 
@@ -92,13 +90,26 @@ async def get_nameCrypto_two(message: Message, state: FSMContext):
     await message.answer(f'⌨️ <b>Калькулятор</b>\n\nЦена {crypto_name}: {crypto_value} = {round(crypto_value * float(price),5)}$', parse_mode='html', reply_markup=kb.calculatorIn)
     await state.clear()
 
-@router.message(F.text == '👑 Премиум функционал')
-async def premium_func(message: Message):
-    user = await rq.get_user(message.from_user.id)
-    if(user.premium == True):
-        await message.answer('👑 <b>Премиум функционал</b>', reply_markup=kb.premiumIn, parse_mode='html')
-    else:
-        await message.answer('Приобретите премиум доступ чтобы пользоваться данными функционалом', reply_markup=kb.premiumBuyIn)
+@router.callback_query(F.data == 'listcrypto')
+async def get_cryptoList(callback: CallbackQuery):
+    await callback.answer('')
+    cryptocurrencies = {
+    "Bitcoin": "BTC",
+    "Ethereum": "ETH",
+    "Solona": "SOL",
+    "First Digital USD": "FDUSD",
+    "USD Coin": "USDC",
+    "Pepe": "PEPE",
+    "Binance Coin": "BNB",
+    "XRP": "XRP",
+    "Dogecoin": "DOGE",
+    "Tether": "USDT"
+}
+
+    result = ""
+    for currency, symbol in cryptocurrencies.items():
+        result += f"<b>{currency}</b>({symbol})\n"
+    await callback.message.answer(result, parse_mode='html')
 
         
 @router.callback_query(F.data == 'backStatsFull')
