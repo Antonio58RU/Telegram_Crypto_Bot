@@ -8,9 +8,10 @@ mainRp = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='📕 О сервисе'),KeyboardButton(text='💼 Профиль')]
 ], resize_keyboard=True, input_field_placeholder='Выберите пункт меню')
 
-mainIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='⏳ Обновить', callback_data='updateStats')],
-                                               [InlineKeyboardButton(text='📈 Полная информация', callback_data='getStatsFull'),
-                                                InlineKeyboardButton(text='⌨️ Калькулятор крипты', callback_data='calculator')]])
+mainIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='⏳ Обновить', callback_data='updateStats'),
+                                               InlineKeyboardButton(text='📈 Полная информация', callback_data='getStatsFull')],
+                                               [InlineKeyboardButton(text='⌨️ Калькулятор криптовалюты', callback_data='calculator'),
+                                               InlineKeyboardButton(text='₿ Список криптовалют', callback_data='listcrypto')]])
 
 profileIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='👑 Приобрести премиум', callback_data='buyPremium')],
                                                 [InlineKeyboardButton(text='⚙️ Настройки', callback_data='settings')],
