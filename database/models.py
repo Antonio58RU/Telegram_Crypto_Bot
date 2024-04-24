@@ -18,13 +18,7 @@ class User(Base):
     registr_date: Mapped[str] = mapped_column(String(15))
     language: Mapped[str] = mapped_column(String(5), default='ru')
     
-class Cryptocurrency(Base):
-    __tablename__ = 'cryptocurrencies24'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(6))
-    price1: Mapped[str] = mapped_column(String(30))
-    price2: Mapped[str] = mapped_column(String(30))  
     
     
 async def async_main():
