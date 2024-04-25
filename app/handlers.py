@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 import app.keybords as kb
 import database.requests as rq
 
-
+from translations import _
 import requests 
 
 import matplotlib.pyplot as plt
@@ -30,7 +30,7 @@ async def cmd_start(message: Message, state: FSMContext):
     await rq.set_user(message.from_user.id)
     await message.answer('@cryptostats58_bot: Будьте в курсе цен, получайте статистику, прогнозы продаж и калькулятор крипты прямо в Telegram.', reply_markup=kb.mainRp)
     await state.clear()
-    
+  
 @router.message(Command('settings'))
 async def cmd_start(message: Message):
      await message.answer(text='⚙️ <b>Настройки</b>', reply_markup=kb.settingsCmdIn, parse_mode='html')
@@ -126,7 +126,7 @@ async def back_statsFull(callback: CallbackQuery):
 @router.message(F.text == '💼 Профиль')
 async def get_statsProfil(message: Message):
     user = await rq.get_user(message.from_user.id)
-    await message.answer(f'<b>Логин:</b> {message.from_user.full_name}\n<b>Статус:</b> {premiumStatus(user.premium)}\n<b>Зарегистрирован:</b> {user.registr_date}', reply_markup=kb.profileIn, parse_mode='html')
+    await message.answer('<b>Логин:</b> {message.from_user.full_name}\n<b>Статус:</b> {premiumStatus(user.premium)}\n<b>Зарегистрирован:</b> {user.registr_date}', reply_markup=kb.profileIn, parse_mode='html')
 
 @router.callback_query(F.data == 'settings')
 async def settings(callback: CallbackQuery):
@@ -137,7 +137,20 @@ async def settings(callback: CallbackQuery):
 async def settings(callback: CallbackQuery):
     await callback.answer('')
     await callback.message.answer(text='<b>Выберите язык</b>', reply_markup=kb.languagesIn, parse_mode='html')
- 
+
+     
+@router.callback_query(F.data.startswith('lang_'))
+async def set_language(callback: CallbackQuery):
+    await callback.answer('')
+    lang = callback.data[5:]
+    await rq.set_lang(callback.from_user.id, lang)
+    if lang == 'ru':
+        message_text = '<b>Русский язык установлен.</b>'
+    else:
+        message_text = '<b>English language is set.</b>'
+    
+    await callback.message.answer(text=message_text, reply_markup=kb.mainRp, parse_mode='html') 
+    
 @router.callback_query(F.data == 'backProfil')
 async def back_Profil(callback: CallbackQuery):
     await callback.answer('')
@@ -195,21 +208,12 @@ async def graphic24_two(message: Message, state: FSMContext):
     await state.update_data(nameCrypto = message.text)
     data = await state.get_data()
     crypto_name = data['nameCrypto']
-    
-    url = f"https://images.cryptocompare.com/sparkchart/{crypto_name}/USD/latest.png?ts=1713464400"
-    
     try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            pass
-        else:
-            raise ValueError("Произошла ошибка!")
+        photo = FSInputFile(f'Graphic_Image24/{crypto_name}.png')
     except:
-        await message.answer(text='Некорректные данные, повторите ввод!') 
+        pass
     
-  
-
-    await message.answer_photo(photo=f'https://images.cryptocompare.com/sparkchart/{crypto_name}/USD/latest.png?ts=1713464400', caption='<b>График за 24часа</b>', reply_markup=kb.graphic24In, parse_mode='html')
+    await message.answer_photo(photo=photo, caption='<b>График за 24 часа</b>', reply_markup=kb.graphic24In, parse_mode='html')
     await state.clear()
 
             
@@ -221,6 +225,9 @@ async def backPremium(callback: CallbackQuery):
         await callback.message.answer('👑 <b>Премиум функционал</b>', reply_markup=kb.premiumIn, parse_mode='html')
     else:
         await callback.message.answer('Приобретите премиум доступ чтобы пользоваться данными функционалом', reply_markup=kb.premiumBuyIn)
+    
+    
+    
     
 def get_messageStats():
     

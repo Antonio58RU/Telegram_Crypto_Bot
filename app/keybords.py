@@ -1,7 +1,6 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                            InlineKeyboardMarkup, InlineKeyboardButton)
 
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 mainRp = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='🏦 Статистика Binance'),KeyboardButton(text='👑 Премиум функционал')],
@@ -20,8 +19,8 @@ profileIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='�
 statsFullIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='✏️ Повторить', callback_data='getStatsFull')],
                                                     [InlineKeyboardButton(text='👈 Назад', callback_data='backStatsFull')]])
 
-languagesIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='🇷🇺 Русский', callback_data='setRussia')],
-                                                [InlineKeyboardButton(text='🇺🇸 English', callback_data='setEnglish')]])
+languagesIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='🇷🇺 Русский', callback_data='lang_ru')],
+                                                [InlineKeyboardButton(text='🇺🇸 English', callback_data='lang_eu')]])
 
 settingsIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='😛 Язык', callback_data='setLang')],
                                                 [InlineKeyboardButton(text='👈 Назад', callback_data='backProfil')]])
