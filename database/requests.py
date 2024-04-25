@@ -15,6 +15,11 @@ async def get_user(tg_id):
     async with async_session() as session:
         return await session.scalar(select(User).where(User.tg_id == tg_id))
     
+async def get_localization(tg_id):
+    async with async_session() as session:
+        user = await session.execute(select(User).where(User.tg_id == tg_id))
+        return user.scalar().language
+    
 async def set_lang(tg_id, lang: str):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.tg_id == tg_id))

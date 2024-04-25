@@ -123,10 +123,24 @@ async def back_statsFull(callback: CallbackQuery):
 
 
 
+
+
 @router.message(F.text == '💼 Профиль')
 async def get_statsProfil(message: Message):
     user = await rq.get_user(message.from_user.id)
-    await message.answer('<b>Логин:</b> {message.from_user.full_name}\n<b>Статус:</b> {premiumStatus(user.premium)}\n<b>Зарегистрирован:</b> {user.registr_date}', reply_markup=kb.profileIn, parse_mode='html')
+    await message.answer(_('<b>Логин:</b> {}\n<b>Статус:</b> {}\n<b>Зарегистрирован:</b> {}', user.language).format(message.from_user.full_name, premiumStatus(user.premium), user.registr_date), reply_markup=kb.profileIn, parse_mode='html')
+
+
+
+
+
+
+
+
+
+
+
+
 
 @router.callback_query(F.data == 'settings')
 async def settings(callback: CallbackQuery):

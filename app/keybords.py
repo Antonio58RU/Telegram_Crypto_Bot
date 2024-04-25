@@ -1,11 +1,13 @@
+from translations import _
+
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                            InlineKeyboardMarkup, InlineKeyboardButton)
 
 
 mainRp = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='🏦 Статистика Binance'),KeyboardButton(text='👑 Премиум функционал')],
-    [KeyboardButton(text='📕 О сервисе'),KeyboardButton(text='💼 Профиль')]
-], resize_keyboard=True, input_field_placeholder='Выберите пункт меню')
+    [KeyboardButton(text='🏦 Статистика Binance'), KeyboardButton(text='👑 Премиум функционал')],
+    [KeyboardButton(text='📕 О сервисе'),KeyboardButton(text='💼 Профиль')]], resize_keyboard=True, input_field_placeholder='Выберите пункт меню')
+
 
 mainIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='⏳ Обновить', callback_data='updateStats'),
                                                InlineKeyboardButton(text='📈 Полная информация', callback_data='getStatsFull')],
