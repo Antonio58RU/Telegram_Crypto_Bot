@@ -16,9 +16,9 @@ async def main():
     load_dotenv()
     await async_main()
     bot = Bot(token = os.getenv('TOKEN'))
-    await bot(DeleteWebhook(drop_pending_updates=True))
     dp = Dispatcher()
     dp.include_router(router)
+    await bot(DeleteWebhook(drop_pending_updates=True))
     await bot.set_my_commands(commands=commands)
     await dp.start_polling(bot)
     

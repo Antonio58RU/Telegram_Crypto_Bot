@@ -29,6 +29,8 @@ settingsIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='�
 
 backProfilIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='👈 Назад', callback_data='backProfil')]])
 
+backStatsIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='👈 Назад', callback_data='backStatsFull')]])
+
 calculatorIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='✏️ Повторить', callback_data='calculator')],
                                                      [InlineKeyboardButton(text='👈 Назад', callback_data='backStatsFull')]])
 

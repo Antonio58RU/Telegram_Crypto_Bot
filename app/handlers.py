@@ -10,8 +10,6 @@ import database.requests as rq
 from translations import _
 import requests 
 
-import matplotlib.pyplot as plt
-
 
 router = Router()
 
@@ -109,7 +107,7 @@ async def get_cryptoList(callback: CallbackQuery):
     result = ""
     for currency, symbol in cryptocurrencies.items():
         result += f"<b>{currency}</b>({symbol})\n"
-    await callback.message.answer(result, parse_mode='html')
+    await callback.message.answer(result,reply_markup=kb.backStatsIn , parse_mode='html')
 
         
 @router.callback_query(F.data == 'backStatsFull')
@@ -169,7 +167,7 @@ async def set_language(callback: CallbackQuery):
 async def back_Profil(callback: CallbackQuery):
     await callback.answer('')
     user1 = await rq.get_user(callback.from_user.id)
-    await callback.message.edit_text(f'<b>Логин:</b> {callback.from_user.full_name}\n<b>Статус:</b> {premiumStatus(user1.premium)}\n<b>Зарегистрирован:</b> {user1.registr_date}', reply_markup=kb.profileIn, parse_mode='html')
+    await callback.message.answer(f'<b>Логин:</b> {callback.from_user.full_name}\n<b>Статус:</b> {premiumStatus(user1.premium)}\n<b>Зарегистрирован:</b> {user1.registr_date}', reply_markup=kb.profileIn, parse_mode='html')
 
      
      
@@ -274,10 +272,13 @@ async def get_messageStatsFull(crypto_name, message: Message):
         market = json_data["RAW"][crypto_name]["USD"]["MARKET"]
         price = json_data["RAW"][crypto_name]["USD"]["PRICE"]
         change24h = json_data["RAW"][crypto_name]["USD"]["CHANGEPCT24HOUR"]
+        highday = json_data["RAW"][crypto_name]["USD"]["HIGHDAY"]
+        lowday = json_data["RAW"][crypto_name]["USD"]["LOWDAY"]
+        changeday = json_data["RAW"][crypto_name]["USD"]["CHANGEPCTDAY"]
     except:
         await message.answer('Некорректные данные, повторите ввод!')
 
-    messageStatsFull_text = f'<b>Изображение криптовалюты</b>\n\n<b>Название: </b>{fromsymbol}\n<b>Маркет: </b>{market}\n<b>Цена: </b>{round(price, 2)}$\n<b>24ч: </b>{change24h}'
+    messageStatsFull_text = f'<b>Изображение криптовалюты:</b>\n\n<b>Название: </b>{fromsymbol}\n<b>Маркет: </b>{market}\n<b>Цена: </b>{price}$\n<b>Изменение за 1ч: </b>{changeday}%\n<b>Изменение за 24ч: </b>{change24h}%\n<b>Максимальная цена за 24ч: </b>{highday}$\n<b>Минимальная цена за 24ч: </b>{lowday}$'
     
     
     await message.answer_photo(photo=imageUrl, caption= messageStatsFull_text, reply_markup=kb.statsFullIn, parse_mode='html')
