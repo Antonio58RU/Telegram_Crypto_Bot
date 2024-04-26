@@ -7,87 +7,21 @@ from aiogram.fsm.context import FSMContext
 import app.keybords as kb
 import database.requests as rq
 
-from translations import _
+from translations import _, get_lang
 import requests 
 
 
 router = Router()
-
-class StatsFullSt(StatesGroup):
-    nameCrypto = State()
-    
-class Graphic24St(StatesGroup):
-    nameCrypto = State()
-    
-class CalculatorSt(StatesGroup):
-    name_and_amount = State()
- 
-
-@router.message(CommandStart())
-async def cmd_start(message: Message, state: FSMContext):
-    await rq.set_user(message.from_user.id)
-    await message.answer('@cryptostats58_bot: Будьте в курсе цен, получайте статистику, прогнозы продаж и калькулятор крипты прямо в Telegram.', reply_markup=kb.mainRp)
-    await state.clear()
-  
-@router.message(Command('settings'))
-async def cmd_start(message: Message):
-     await message.answer(text='⚙️ <b>Настройки</b>', reply_markup=kb.settingsCmdIn, parse_mode='html')
      
-@router.message(Command('help'))
-async def cmd_start(message: Message):
-     await message.answer(text='/start - Запуск бота\n/setting - Настройки\n/help Помощь\n\nhttps://t.me/AntonBog123')
-     
-@router.message(F.text == '🏦 Статистика Binance')
+@router.message((F.text == '🏦 Статистика') | (F.text == '🏦 Statistics'))
 async def get_stats(message: Message):
-    await message.answer(get_messageStats(), reply_markup=kb.mainIn, parse_mode='html')
+    await message.answer(get_messageStats(), reply_markup=kb.mainIn(await get_lang(message.from_user.id)), parse_mode='html')
     
 @router.callback_query(F.data == 'updateStats')
 async def update_stats(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.edit_text(get_messageStats(), reply_markup=kb.mainIn, parse_mode='html')
+    await callback.message.edit_text(get_messageStats(), reply_markup=kb.mainIn(await get_lang(callback.from_user.id)), parse_mode='html')
     
-@router.callback_query(F.data == 'getStatsFull')
-async def get_statsFull(callback: CallbackQuery, state: FSMContext):
-    await callback.answer('')
-    await state.set_state(StatsFullSt.nameCrypto)
-    await callback.message.answer('Введите название криптовалюты.', parse_mode='html')
-    
-@router.message(StatsFullSt.nameCrypto)
-async def StatsFull_stats(message: Message, state: FSMContext):
-    await state.update_data(nameCrypto = message.text)
-    data = await state.get_data()
-    crypto_name = data['nameCrypto']
-    await get_messageStatsFull(crypto_name, message)
-    
-    await state.clear()
- 
-@router.callback_query(F.data == 'calculator')
-async def get_nameCrypto(callback: CallbackQuery, state: FSMContext):
-    await callback.answer('')
-    await state.set_state(CalculatorSt.name_and_amount)
-    await callback.message.answer('<b>Введите название криптовалюты и её количество\nчерез символ "-"</b>\nНапример - "BNB-3.54".', parse_mode='html')
-    
-@router.message(CalculatorSt.name_and_amount)
-async def get_nameCrypto_two(message: Message, state: FSMContext):
-    await state.update_data(name_and_amount = message.text)
-    data = await state.get_data()
-    
-    
-    
-    try:
-        crypto_name, crypto_value = data['name_and_amount'].split('-')
-        r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD')
-        json_data = r.json()
-        price = json_data["RAW"][crypto_name]["USD"]["PRICE"]
-        crypto_value = float(crypto_value)
-    except:  
-         await message.answer(text='Некорректные данные, повторите ввод!') 
-    
-        
-    
-    await message.answer(f'⌨️ <b>Калькулятор</b>\n\nЦена {crypto_name}: {crypto_value} = {round(crypto_value * float(price),5)}$', parse_mode='html', reply_markup=kb.calculatorIn)
-    await state.clear()
-
 @router.callback_query(F.data == 'listcrypto')
 async def get_cryptoList(callback: CallbackQuery):
     await callback.answer('')
@@ -113,32 +47,14 @@ async def get_cryptoList(callback: CallbackQuery):
 @router.callback_query(F.data == 'backStatsFull')
 async def back_statsFull(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn, parse_mode='html')
+    await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn(lang(callback.from_user.id)), parse_mode='html')
 
 
 
-
-
-
-
-
-
-@router.message(F.text == '💼 Профиль')
+@router.message((F.text == '💼 Профиль') | (F.text == '💼 Profile'))
 async def get_statsProfil(message: Message):
     user = await rq.get_user(message.from_user.id)
-    await message.answer(_('<b>Логин:</b> {}\n<b>Статус:</b> {}\n<b>Зарегистрирован:</b> {}', user.language).format(message.from_user.full_name, premiumStatus(user.premium), user.registr_date), reply_markup=kb.profileIn, parse_mode='html')
-
-
-
-
-
-
-
-
-
-
-
-
+    await message.answer(_(get_profilStats(), user.language).format(message.from_user.full_name, premiumStatus(user.premium), user.registr_date), reply_markup=kb.profileIn(await get_lang(message.from_user.id)), parse_mode='html')
 
 @router.callback_query(F.data == 'settings')
 async def settings(callback: CallbackQuery):
@@ -149,8 +65,7 @@ async def settings(callback: CallbackQuery):
 async def settings(callback: CallbackQuery):
     await callback.answer('')
     await callback.message.answer(text='<b>Выберите язык</b>', reply_markup=kb.languagesIn, parse_mode='html')
-
-     
+    
 @router.callback_query(F.data.startswith('lang_'))
 async def set_language(callback: CallbackQuery):
     await callback.answer('')
@@ -161,17 +76,15 @@ async def set_language(callback: CallbackQuery):
     else:
         message_text = '<b>English language is set.</b>'
     
-    await callback.message.answer(text=message_text, reply_markup=kb.mainRp, parse_mode='html') 
+    await callback.message.answer(text=message_text, reply_markup=kb.mainRp(lang), parse_mode='html') 
     
 @router.callback_query(F.data == 'backProfil')
 async def back_Profil(callback: CallbackQuery):
     await callback.answer('')
-    user1 = await rq.get_user(callback.from_user.id)
-    await callback.message.answer(f'<b>Логин:</b> {callback.from_user.full_name}\n<b>Статус:</b> {premiumStatus(user1.premium)}\n<b>Зарегистрирован:</b> {user1.registr_date}', reply_markup=kb.profileIn, parse_mode='html')
+    user = await rq.get_user(callback.from_user.id)
+    await callback.message.answer(_(get_profilStats(), user.language).format(callback.message.from_user.full_name, premiumStatus(user.premium), user.registr_date), reply_markup=kb.profileIn(await get_lang(callback.message.from_user.id)), parse_mode='html')
 
-     
-     
-     
+  
 @router.callback_query(F.data == 'help')
 async def support(callback: CallbackQuery):
     await callback.answer('')
@@ -181,7 +94,7 @@ async def support(callback: CallbackQuery):
   
   
        
-@router.message(F.text == '📕 О сервисе')
+@router.message((F.text == '📕 О сервисе') | (F.text == '📕 About the Service'))
 async def get_info(message: Message):
     photo = FSInputFile('Images/photoInfo.jpeg')
     await message.answer_photo(photo=photo, caption='<b>Данный сервис позволяет быть в курсе актуальных цен на криптовалюты, получать подробную статистику о рынке, получать прогнозы продаж и использовать удобный калькулятор для расчета криптовалюты - все это доступно прямо в Telegram. Благодаря этому сервису вы сможете быть в курсе последних изменений на рынке и принимать осознанные решения в области криптовалютных инвестиций.</b>', parse_mode='html')
@@ -191,7 +104,7 @@ async def get_info(message: Message):
     
     
     
-@router.message(F.text == '👑 Премиум функционал')
+@router.message((F.text == '👑 Премиум функционал') | (F.text == '👑 Premium Functionality'))
 async def premium_func(message: Message):
     user = await rq.get_user(message.from_user.id)
     if(user.premium == True):
@@ -209,24 +122,7 @@ async def buy_premium(callback: CallbackQuery):
         await rq.update_user_premium_status(callback.from_user.id)
         await callback.message.answer(text='Премиум куплен!')
     
-@router.callback_query(F.data == 'graphic24')
-async def graphic24(callback: CallbackQuery, state: FSMContext):
-    await callback.answer('')
-    await state.set_state(Graphic24St.nameCrypto)
-    await callback.message.answer('Введите название криптовалюты.', parse_mode='html')
-    
-@router.message(Graphic24St.nameCrypto)
-async def graphic24_two(message: Message, state: FSMContext):
-    await state.update_data(nameCrypto = message.text)
-    data = await state.get_data()
-    crypto_name = data['nameCrypto']
-    try:
-        photo = FSInputFile(f'Graphic_Image24/{crypto_name}.png')
-    except:
-        pass
-    
-    await message.answer_photo(photo=photo, caption='<b>График за 24 часа</b>', reply_markup=kb.graphic24In, parse_mode='html')
-    await state.clear()
+
 
             
 @router.callback_query(F.data == 'backPremium')
@@ -239,7 +135,9 @@ async def backPremium(callback: CallbackQuery):
         await callback.message.answer('Приобретите премиум доступ чтобы пользоваться данными функционалом', reply_markup=kb.premiumBuyIn)
     
     
-    
+def get_profilStats():
+    return '<b>Логин:</b> {}\n<b>Статус:</b> {}\n<b>Зарегистрирован:</b> {}'
+
     
 def get_messageStats():
     
@@ -258,31 +156,6 @@ def get_messageStats():
         
         messageStats_text += f"<b>{currency}:=</b><i>{price}$</i>, <b>24h:</b> <i>{change24h}%</i>\n"
     return messageStats_text
-
-async def get_messageStatsFull(crypto_name, message: Message):
-    
-    
-    r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD')
-    json_data = r.json()
-
-    try:
-        imageUrl = json_data["RAW"][crypto_name]["USD"]["IMAGEURL"]
-        imageUrl = f'https://www.cryptocompare.com/{imageUrl}'
-        fromsymbol = json_data["RAW"][crypto_name]["USD"]["FROMSYMBOL"]
-        market = json_data["RAW"][crypto_name]["USD"]["MARKET"]
-        price = json_data["RAW"][crypto_name]["USD"]["PRICE"]
-        change24h = json_data["RAW"][crypto_name]["USD"]["CHANGEPCT24HOUR"]
-        highday = json_data["RAW"][crypto_name]["USD"]["HIGHDAY"]
-        lowday = json_data["RAW"][crypto_name]["USD"]["LOWDAY"]
-        changeday = json_data["RAW"][crypto_name]["USD"]["CHANGEPCTDAY"]
-    except:
-        await message.answer('Некорректные данные, повторите ввод!')
-
-    messageStatsFull_text = f'<b>Изображение криптовалюты:</b>\n\n<b>Название: </b>{fromsymbol}\n<b>Маркет: </b>{market}\n<b>Цена: </b>{price}$\n<b>Изменение за 1ч: </b>{changeday}%\n<b>Изменение за 24ч: </b>{change24h}%\n<b>Максимальная цена за 24ч: </b>{highday}$\n<b>Минимальная цена за 24ч: </b>{lowday}$'
-    
-    
-    await message.answer_photo(photo=imageUrl, caption= messageStatsFull_text, reply_markup=kb.statsFullIn, parse_mode='html')
-       
 
 def premiumStatus(premium: bool):
     if(premium == False):    

@@ -4,11 +4,8 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.methods import DeleteWebhook
 from dotenv import load_dotenv
-
 from database.models import async_main
-
-from app.handlers import router
-
+from app import handlers, handlers_cmd, fsm
 from bot_cmds_list import commands
 
 
@@ -17,7 +14,9 @@ async def main():
     await async_main()
     bot = Bot(token = os.getenv('TOKEN'))
     dp = Dispatcher()
-    dp.include_router(router)
+    dp.include_router(handlers.router)
+    dp.include_router(fsm.router)
+    dp.include_router(handlers_cmd.router)
     await bot(DeleteWebhook(drop_pending_updates=True))
     await bot.set_my_commands(commands=commands)
     await dp.start_polling(bot)

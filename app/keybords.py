@@ -3,20 +3,24 @@ from translations import _
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                            InlineKeyboardMarkup, InlineKeyboardButton)
 
+def mainRp(lang):
+    mainRp = ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text=_('🏦 Статистика', lang)), KeyboardButton(text=_('👑 Премиум функционал', lang))],
+        [KeyboardButton(text=_('📕 О сервисе', lang)),KeyboardButton(text=_('💼 Профиль', lang))]], resize_keyboard=True, input_field_placeholder=_('Выберите пункт меню', lang))
+    return mainRp
 
-mainRp = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='🏦 Статистика Binance'), KeyboardButton(text='👑 Премиум функционал')],
-    [KeyboardButton(text='📕 О сервисе'),KeyboardButton(text='💼 Профиль')]], resize_keyboard=True, input_field_placeholder='Выберите пункт меню')
+def mainIn(lang):
+    mainIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('⏳ Обновить', lang), callback_data='updateStats'),
+                                                InlineKeyboardButton(text=_('📈 Полная информация', lang), callback_data='getStatsFull')],
+                                                [InlineKeyboardButton(text=_('⌨️ Калькулятор криптовалюты', lang), callback_data='calculator'),
+                                                InlineKeyboardButton(text=_('₿ Список криптовалют', lang), callback_data='listcrypto')]])
+    return mainIn
 
-
-mainIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='⏳ Обновить', callback_data='updateStats'),
-                                               InlineKeyboardButton(text='📈 Полная информация', callback_data='getStatsFull')],
-                                               [InlineKeyboardButton(text='⌨️ Калькулятор криптовалюты', callback_data='calculator'),
-                                               InlineKeyboardButton(text='₿ Список криптовалют', callback_data='listcrypto')]])
-
-profileIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='👑 Приобрести премиум', callback_data='buyPremium')],
-                                                [InlineKeyboardButton(text='⚙️ Настройки', callback_data='settings')],
-                                                [InlineKeyboardButton(text='📌 Помощь', callback_data='help')]])
+def profileIn(lang):
+    profileIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('👑 Приобрести премиум', lang), callback_data='buyPremium')],
+                                                [InlineKeyboardButton(text=_('⚙️ Настройки', lang), callback_data='settings')],
+                                                [InlineKeyboardButton(text=_('📌 Помощь', lang), callback_data='help')]])
+    return profileIn
 
 statsFullIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='✏️ Повторить', callback_data='getStatsFull')],
                                                     [InlineKeyboardButton(text='👈 Назад', callback_data='backStatsFull')]])

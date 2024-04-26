@@ -33,8 +33,9 @@ for symbol, image_name in crypto_list.items():
     plt.xlabel('Date')
     plt.ylabel('Price (USD)')
     plt.xticks(rotation=45)
+    plt.title(symbol.capitalize())  # Set the title to the capitalized symbol
 
     # Save the image in the 'Graphic_Image24' folder with the symbol as the filename
-    plt.savefig(f'Graphic_Image24/{image_name}.png')
+    plt.savefig(f'Images/Graphic_Image24/{image_name}.png')
     plt.clf()
     sleep(5)
