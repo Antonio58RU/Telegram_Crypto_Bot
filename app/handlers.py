@@ -41,40 +41,38 @@ async def get_cryptoList(callback: CallbackQuery):
     result = ""
     for currency, symbol in cryptocurrencies.items():
         result += f"<b>{currency}</b>({symbol})\n"
-    await callback.message.answer(result,reply_markup=kb.backStatsIn , parse_mode='html')
+    await callback.message.answer(result,reply_markup=kb.backStatsIn(await get_lang(callback.from_user.id)) , parse_mode='html')
 
         
 @router.callback_query(F.data == 'backStatsFull')
 async def back_statsFull(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn(lang(callback.from_user.id)), parse_mode='html')
+    await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn(await get_lang(callback.from_user.id)), parse_mode='html')
 
 
 
 @router.message((F.text == '💼 Профиль') | (F.text == '💼 Profile'))
 async def get_statsProfil(message: Message):
     user = await rq.get_user(message.from_user.id)
-    await message.answer(_(get_profilStats(), user.language).format(message.from_user.full_name, premiumStatus(user.premium), user.registr_date), reply_markup=kb.profileIn(await get_lang(message.from_user.id)), parse_mode='html')
+    await message.answer(_(get_profilStats(), user.language).format(message.from_user.full_name, _(premiumStatus(user.premium), user.language), user.registr_date), reply_markup=kb.profileIn(user.language), parse_mode='html')
 
 @router.callback_query(F.data == 'settings')
 async def settings(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.answer(text='⚙️ <b>Настройки</b>', reply_markup=kb.settingsIn, parse_mode='html')
+    await callback.message.answer(text=_('⚙️ <b>Настройки</b>', await get_lang(callback.from_user.id)), reply_markup=kb.settingsIn(await get_lang(callback.from_user.id)), parse_mode='html')
     
 @router.callback_query(F.data == 'setLang')
 async def settings(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.answer(text='<b>Выберите язык</b>', reply_markup=kb.languagesIn, parse_mode='html')
+    await callback.message.answer(text=_('<b>Выберите язык</b>', await get_lang(callback.from_user.id)), reply_markup=kb.languagesIn, parse_mode='html')
     
 @router.callback_query(F.data.startswith('lang_'))
 async def set_language(callback: CallbackQuery):
     await callback.answer('')
     lang = callback.data[5:]
     await rq.set_lang(callback.from_user.id, lang)
-    if lang == 'ru':
-        message_text = '<b>Русский язык установлен.</b>'
-    else:
-        message_text = '<b>English language is set.</b>'
+ 
+    message_text = _('<b>Русский язык установлен.</b>', lang)
     
     await callback.message.answer(text=message_text, reply_markup=kb.mainRp(lang), parse_mode='html') 
     
@@ -82,13 +80,13 @@ async def set_language(callback: CallbackQuery):
 async def back_Profil(callback: CallbackQuery):
     await callback.answer('')
     user = await rq.get_user(callback.from_user.id)
-    await callback.message.answer(_(get_profilStats(), user.language).format(callback.message.from_user.full_name, premiumStatus(user.premium), user.registr_date), reply_markup=kb.profileIn(await get_lang(callback.message.from_user.id)), parse_mode='html')
+    await callback.message.answer(_(get_profilStats(), user.language).format(callback.from_user.full_name, _(premiumStatus(user.premium), user.language), user.registr_date), reply_markup=kb.profileIn(user.language), parse_mode='html')
 
   
 @router.callback_query(F.data == 'help')
 async def support(callback: CallbackQuery):
     await callback.answer('')
-    await callback.message.answer(text='/start - Запуск бота\n/setting - Настройки\n/help Помощь\n\nhttps://t.me/AntonBog123', reply_markup=kb.backProfilIn)
+    await callback.message.answer(text=_('/start - Запуск бота\n/settings - Настройки\n/help Помощь\n\nhttps://t.me/AntonBog123', await get_lang(callback.from_user.id)), reply_markup=kb.backProfilIn(await get_lang(callback.from_user.id)))
   
   
   
@@ -97,7 +95,7 @@ async def support(callback: CallbackQuery):
 @router.message((F.text == '📕 О сервисе') | (F.text == '📕 About the Service'))
 async def get_info(message: Message):
     photo = FSInputFile('Images/photoInfo.jpeg')
-    await message.answer_photo(photo=photo, caption='<b>Данный сервис позволяет быть в курсе актуальных цен на криптовалюты, получать подробную статистику о рынке, получать прогнозы продаж и использовать удобный калькулятор для расчета криптовалюты - все это доступно прямо в Telegram. Благодаря этому сервису вы сможете быть в курсе последних изменений на рынке и принимать осознанные решения в области криптовалютных инвестиций.</b>', parse_mode='html')
+    await message.answer_photo(photo=photo, caption='<b>Наш сервис предоставляет вам возможность быть в курсе актуальных цен на криптовалюты, получать подробную статистику о рынке и использовать удобный калькулятор для расчета криптовалюты - все это доступно прямо в Telegram. Благодаря нашему сервису, вы будете всегда в курсе последних изменений на рынке и сможете принимать осознанные решения в области криптовалютных инвестиций.\n\nЗдесь вы найдете следующие функции:\n\nПросмотр статистики цен на криптовалюты, чтобы быть в курсе их текущего состояния.Получение полной статистики о криптовалюте, чтобы анализировать и прогнозировать будущие изменения.\n\nИспользование калькулятора для расчета криптовалюты, чтобы быстро и удобно выполнять необходимые расчеты.\n\nПросмотр списка доступных криптовалют, чтобы быть в курсе всех доступных опций.\n\nМы стремимся предоставить вам все необходимые инструменты и информацию для принятия осознанных решений в области криптовалютных инвестиций.</b>', parse_mode='html')
     
     
     
@@ -108,19 +106,19 @@ async def get_info(message: Message):
 async def premium_func(message: Message):
     user = await rq.get_user(message.from_user.id)
     if(user.premium == True):
-        await message.answer('👑 <b>Премиум функционал</b>', reply_markup=kb.premiumIn, parse_mode='html')
+        await message.answer(_('👑 <b>Премиум функционал</b>', await get_lang(message.from_user.id)), reply_markup=kb.premiumIn(await get_lang(message.from_user.id)), parse_mode='html')
     else:
-        await message.answer('Приобретите премиум доступ чтобы пользоваться данными функционалом', reply_markup=kb.premiumBuyIn)
+        await message.answer(_('Приобретите премиум доступ чтобы пользоваться данными функционалом', await get_lang(message.from_user.id)), reply_markup=kb.premiumBuyIn(await get_lang(message.from_user.id)))
        
 @router.callback_query(F.data == 'buyPremium')
 async def buy_premium(callback: CallbackQuery):
     await callback.answer('')
     user = await rq.get_user(callback.from_user.id)
     if(user.premium == True):
-        await callback.message.answer(text='Вы уже приобрели премиум статус.')
+        await callback.message.answer(text=_('Вы уже приобрели премиум статус.', await get_lang(callback.from_user.id)))
     else:
         await rq.update_user_premium_status(callback.from_user.id)
-        await callback.message.answer(text='Премиум куплен!')
+        await callback.message.answer(text=_('Премиум куплен!', await get_lang(callback.from_user.id)))
     
 
 
@@ -130,9 +128,9 @@ async def backPremium(callback: CallbackQuery):
     await callback.answer('')
     user = await rq.get_user(callback.from_user.id)
     if(user.premium == True):
-        await callback.message.answer('👑 <b>Премиум функционал</b>', reply_markup=kb.premiumIn, parse_mode='html')
+        await callback.message.answer(_('👑 <b>Премиум функционал</b>', await get_lang(callback.from_user.id)), reply_markup=kb.premiumIn(await get_lang(callback.from_user.id)), parse_mode='html')
     else:
-        await callback.message.answer('Приобретите премиум доступ чтобы пользоваться данными функционалом', reply_markup=kb.premiumBuyIn)
+        await callback.message.answer(_('Приобретите премиум доступ чтобы пользоваться данными функционалом', await get_lang(callback.from_user.id)), reply_markup=kb.premiumBuyIn(await get_lang(callback.from_user.id)))
     
     
 def get_profilStats():

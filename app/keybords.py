@@ -22,35 +22,65 @@ def profileIn(lang):
                                                 [InlineKeyboardButton(text=_('📌 Помощь', lang), callback_data='help')]])
     return profileIn
 
-statsFullIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='✏️ Повторить', callback_data='getStatsFull')],
-                                                    [InlineKeyboardButton(text='👈 Назад', callback_data='backStatsFull')]])
+def statsFullIn(lang):
+    statsFullIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('✏️ Повторить', lang), callback_data='getStatsFull')],
+                                                        [InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='backStatsFull')]])
+    return statsFullIn
+
 
 languagesIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='🇷🇺 Русский', callback_data='lang_ru')],
                                                 [InlineKeyboardButton(text='🇺🇸 English', callback_data='lang_eu')]])
 
-settingsIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='😛 Язык', callback_data='setLang')],
-                                                [InlineKeyboardButton(text='👈 Назад', callback_data='backProfil')]])
+def settingsIn(lang):
+    settingsIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('😛 Язык', lang), callback_data='setLang')],
+                                                [InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='backProfil')]])
+    return settingsIn
 
-backProfilIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='👈 Назад', callback_data='backProfil')]])
+def backProfilIn(lang):
+    backProfilIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='backProfil')]])
+    return backProfilIn
 
-backStatsIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='👈 Назад', callback_data='backStatsFull')]])
+def backStatsIn(lang):
+    backStatsIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='backStatsFull')]])
+    return backStatsIn
 
-calculatorIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='✏️ Повторить', callback_data='calculator')],
-                                                     [InlineKeyboardButton(text='👈 Назад', callback_data='backStatsFull')]])
+def calculatorIn(lang):
+    calculatorIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('✏️ Повторить', lang), callback_data='calculator')],
+                                                        [InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='backStatsFull')]])
+    return calculatorIn
 
-premiumIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='📉 График(24)', callback_data='graphic24'),
-                                                InlineKeyboardButton(text='📰 Новости', url= 'https://t.me/topslivs')],
-                                                [InlineKeyboardButton(text='📘 Обучающие материалы',url='https://t.me/FAQcrypta')]])
-                                         
-premiumBuyIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='👑 Приобрести премиум', callback_data='buyPremium')]])
+def premiumIn(lang):
+    premiumIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('📉 Графики', lang), callback_data='graphic'),
+                                                InlineKeyboardButton(text=_('📰 Новости', lang), url= 'https://t.me/topslivs')],
+                                                [InlineKeyboardButton(text=_('📘 Обучающие материалы', lang),url='https://t.me/FAQcrypta')]])
+    return premiumIn                             
+   
+def premiumBuyIn(lang):                                       
+    premiumBuyIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('👑 Приобрести премиум', lang), callback_data='buyPremium')]])
+    return premiumBuyIn
 
-graphic24In = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='✏️ Повторить', callback_data='graphic24')],
-                                                    [InlineKeyboardButton(text='👈 Назад', callback_data='backPremium')]])
+def graphic(lang):
+    graphic = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('📈 График(24)', lang), callback_data='graphic24')],
+                                                    [InlineKeyboardButton(text=_('📉 График(7)', lang), callback_data='graphic7')],
+                                                    [InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='backPremium')]])
+    return graphic
+
+def graphic7In(lang):
+    graphic7In = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('✏️ Повторить', lang), callback_data='graphic7')],
+                                                    [InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='graphic')]])
+    return graphic7In
+
+def graphic24In(lang):
+    graphic24In = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('✏️ Повторить', lang), callback_data='graphic24')],
+                                                    [InlineKeyboardButton(text=_('👈 Назад', lang), callback_data='graphic')]])
+    return graphic24In
+
 
 cryptoRp = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='BTC'),KeyboardButton(text='ETH')],
     [KeyboardButton(text='USDT'),KeyboardButton(text='BNB')]
 ], resize_keyboard=True, input_field_placeholder='Выберите криптовалюту')
 
-
-settingsCmdIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='😛 Язык', callback_data='setLang')]])
+def settingsCmdIn(lang):
+    settingsCmdIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('😛 Язык', lang), callback_data='setLang')]])
+    return settingsCmdIn
