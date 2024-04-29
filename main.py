@@ -1,6 +1,6 @@
 import os
 import asyncio
-import logging
+#import logging
 from aiogram import Bot, Dispatcher
 from aiogram.methods import DeleteWebhook
 from dotenv import load_dotenv
@@ -12,6 +12,7 @@ from graphic24 import gr24
 from graphic7 import gr7
 
 async def main():
+    print('Бот запущен!')
     load_dotenv()
     await async_main()
     bot = Bot(token = os.getenv('TOKEN'))
@@ -27,17 +28,23 @@ async def main():
 def start_main():
     try:
         asyncio.run(main())
-    except KeyboardInterrupt:
-        print('Exit')
+    except:
+        print('Exit1')
 
 def start_gr24():
-    gr24()
-
+    try:
+        gr24()
+    except:
+        print('Exit2')
+        
 def start_gr7():
-    gr7()
-
+    try:
+        gr7()
+    except:
+        print('Exit3')
+        
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    #logging.basicConfig(level=logging.INFO)
     process_main = multiprocessing.Process(target=start_main)
     process_gr24 = multiprocessing.Process(target=start_gr24)
     process_gr7 = multiprocessing.Process(target=start_gr7)
@@ -50,3 +57,4 @@ if __name__ == '__main__':
     process_main.join()
     process_gr24.join()
     process_gr7.join()
+    

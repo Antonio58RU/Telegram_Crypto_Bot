@@ -19,7 +19,7 @@ async def cmd_start(message: Message, state: FSMContext):
   
 @router.message(Command('settings'))
 async def cmd_start(message: Message):
-     await message.answer(text=_('⚙️ <b>Настройки</b>', await get_lang(message.from_user.id)), reply_markup=kb.settingsCmdIn, parse_mode='html')
+     await message.answer(text=_('⚙️ <b>Настройки</b>', await get_lang(message.from_user.id)), reply_markup=kb.settingsCmdIn(await get_lang(message.from_user.id)), parse_mode='html')
      
 @router.message(Command('help'))
 async def cmd_start(message: Message):

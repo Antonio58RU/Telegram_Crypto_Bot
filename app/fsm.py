@@ -128,6 +128,7 @@ async def get_messageStatsFull(crypto_name, message: Message):
         highday = json_data["RAW"][crypto_name]["USD"]["HIGHDAY"]
         lowday = json_data["RAW"][crypto_name]["USD"]["LOWDAY"]
         changeday = json_data["RAW"][crypto_name]["USD"]["CHANGEPCTDAY"]
+        toptiervolume24hourto = json_data["RAW"][crypto_name]["USD"]["TOPTIERVOLUME24HOURTO"]
     except:
         await message.answer(_('Некорректные данные, повторите ввод!', await get_lang(message.from_user.id)))
 

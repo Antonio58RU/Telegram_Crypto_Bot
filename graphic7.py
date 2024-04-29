@@ -42,5 +42,5 @@ def gr7():
             plt.close()
           
         print('Графики 7 дней готовы')    
-        sleep(10 * 60) 
+        sleep(60 * 60) 
         
