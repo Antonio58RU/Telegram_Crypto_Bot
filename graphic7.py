@@ -11,6 +11,7 @@ crypto_list = {'bitcoin': 'BTC', 'ethereum': 'ETH', 'solana': 'SOL', 'usd-coin':
 coinGecko = pycoingecko.CoinGeckoAPI()
 
 def gr7():
+    sleep(6 * 60)
     while True:
         for symbol, image_name in crypto_list.items():
             # Get historical price data for the cryptocurrency for the last 7 days
