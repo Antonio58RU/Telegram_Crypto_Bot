@@ -14,14 +14,20 @@ import requests
 router = Router()
      
 @router.message((F.text == '🏦 Статистика') | (F.text == '🏦 Statistics'))
-async def get_stats(message: Message):
-    await message.answer(get_messageStats(), reply_markup=kb.mainIn(await get_lang(message.from_user.id)), parse_mode='html')
-    
 @router.callback_query(F.data == 'updateStats')
-async def update_stats(callback: CallbackQuery):
-    await callback.answer('')
-    await callback.message.edit_text(get_messageStats(), reply_markup=kb.mainIn(await get_lang(callback.from_user.id)), parse_mode='html')
-    
+async def handle_stats(message_or_callback):
+    if isinstance(message_or_callback, Message):
+        # Обработка сообщения
+        message = message_or_callback
+        # Ваш код для обработки сообщения
+        await message.answer(get_messageStats(), reply_markup=kb.mainIn(await get_lang(message.from_user.id)), parse_mode='html')
+    elif isinstance(message_or_callback, CallbackQuery):
+        # Обработка коллбэка
+        callback = message_or_callback
+        # Ваш код для обработки коллбэка
+        await callback.answer('')
+        await callback.message.edit_text(get_messageStats(), reply_markup=kb.mainIn(await get_lang(callback.from_user.id)), parse_mode='html')
+
 @router.callback_query(F.data == 'listcrypto')
 async def get_cryptoList(callback: CallbackQuery):
     await callback.answer('')
@@ -42,14 +48,11 @@ async def get_cryptoList(callback: CallbackQuery):
     for currency, symbol in cryptocurrencies.items():
         result += f"<b>{currency}</b>({symbol})\n"
     await callback.message.answer(result,reply_markup=kb.backStatsIn(await get_lang(callback.from_user.id)) , parse_mode='html')
-
-        
+       
 @router.callback_query(F.data == 'backStatsFull')
 async def back_statsFull(callback: CallbackQuery):
     await callback.answer('')
     await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn(await get_lang(callback.from_user.id)), parse_mode='html')
-
-
 
 @router.message((F.text == '💼 Профиль') | (F.text == '💼 Profile'))
 async def get_statsProfil(message: Message):
@@ -81,17 +84,12 @@ async def back_Profil(callback: CallbackQuery):
     await callback.answer('')
     user = await rq.get_user(callback.from_user.id)
     await callback.message.answer(_(get_profilStats(), user.language).format(callback.from_user.full_name, _(premiumStatus(user.premium), user.language), user.registr_date), reply_markup=kb.profileIn(user.language), parse_mode='html')
-
-  
+ 
 @router.callback_query(F.data == 'help')
 async def support(callback: CallbackQuery):
     await callback.answer('')
     await callback.message.answer(text=_('/start - Запуск бота\n/settings - Настройки\n/help Помощь\n\nhttps://t.me/AntonBog123', await get_lang(callback.from_user.id)), reply_markup=kb.backProfilIn(await get_lang(callback.from_user.id)))
-  
-  
-  
-  
-       
+        
 @router.message((F.text == '📕 О сервисе') | (F.text == '📕 About the Service'))
 async def get_info(message: Message):
     photo = FSInputFile('Images/photoInfo.jpeg')
@@ -100,12 +98,7 @@ async def get_info(message: Message):
 
 
     await message.answer_photo(photo=photo, caption=_(text, await get_lang(message.from_user.id)), parse_mode='html')
-
-    
-    
-    
-    
-    
+  
 @router.message((F.text == '👑 Премиум функционал') | (F.text == '👑 Premium Functionality'))
 async def premium_func(message: Message):
     user = await rq.get_user(message.from_user.id)
@@ -123,10 +116,7 @@ async def buy_premium(callback: CallbackQuery):
     else:
         await rq.update_user_premium_status(callback.from_user.id)
         await callback.message.answer(text=_('Премиум куплен!', await get_lang(callback.from_user.id)))
-    
-
-
-            
+             
 @router.callback_query(F.data == 'backPremium')
 async def backPremium(callback: CallbackQuery):
     await callback.answer('')
@@ -139,8 +129,7 @@ async def backPremium(callback: CallbackQuery):
     
 def get_profilStats():
     return '<b>Логин:</b> {}\n<b>Статус:</b> {}\n<b>Зарегистрирован:</b> {}'
-
-    
+   
 def get_messageStats():
     
     cryptocurrencies = ["BTC", "ETH", "USDT", "BNB", "SOL"]
