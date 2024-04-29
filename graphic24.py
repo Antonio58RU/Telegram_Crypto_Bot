@@ -41,5 +41,5 @@ def gr24():
             plt.close()
             sleep(10)
         print('Графики 24 часа готовы')            
-        sleep(30 * 60) 
+        sleep(20 * 60) 
         

@@ -132,7 +132,7 @@ async def get_messageStatsFull(crypto_name, message: Message):
     except:
         await message.answer(_('Некорректные данные, повторите ввод!', await get_lang(message.from_user.id)))
 
-    messageStatsFull_text = _('<b>Изображение криптовалюты:</b>\n\n<b>Название: </b>{}\n<b>Маркет: </b>{}\n<b>Цена: </b>{}$\n<b>Изменение за 1ч: </b>{}%\n<b>Изменение за 24ч: </b>{}%\n<b>Максимальная цена за 24ч: </b>{}$\n<b>Минимальная цена за 24ч: </b>{}$', await get_lang(message.from_user.id)).format(fromsymbol, market, price, changeday, change24h, highday, lowday)
+    messageStatsFull_text = _('<b>Изображение криптовалюты:</b>\n\n<b>Название: </b>{}\n<b>Маркет: </b>{}\n<b>Цена: </b>{}$\n<b>Обьём торгов за 24ч: </b>{}$\n<b>Изменение за 1ч: </b>{}%\n<b>Изменение за 24ч: </b>{}%\n<b>Максимальная цена за 24ч: </b>{}$\n<b>Минимальная цена за 24ч: </b>{}$', await get_lang(message.from_user.id)).format(fromsymbol, market, price, toptiervolume24hourto, changeday, change24h, highday, lowday)
     
     
     await message.answer_photo(photo=imageUrl, caption= messageStatsFull_text, reply_markup=kb.statsFullIn(await get_lang(message.from_user.id)), parse_mode='html')
