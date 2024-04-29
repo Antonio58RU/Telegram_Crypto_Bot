@@ -32,16 +32,11 @@ def start_main():
         print('Exit1')
 
 def start_gr24():
-    try:
-        gr24()
-    except:
-        print('Exit2')
-        
+    gr24()
+  
 def start_gr7():
-    try:
-        gr7()
-    except:
-        print('Exit3')
+    gr7()
+
         
 if __name__ == '__main__':
     #logging.basicConfig(level=logging.INFO)

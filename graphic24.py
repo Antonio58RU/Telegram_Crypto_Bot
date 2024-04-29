@@ -39,7 +39,7 @@ def gr24():
             # Save the image in the 'Graphic_Image24' folder with the symbol as the filename
             plt.savefig(f'Images/Graphic_Image24/{image_name}.png')
             plt.close()
-         
+            sleep(10)
         print('Графики 24 часа готовы')            
         sleep(30 * 60) 
         

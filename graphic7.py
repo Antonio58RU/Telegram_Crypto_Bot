@@ -40,7 +40,7 @@ def gr7():
             # Save the image in the 'Images/Graphic_Image7' folder with the symbol as the filename
             plt.savefig(f'Images/Graphic_Image7/{image_name}.png')
             plt.close()
-          
+            sleep(10)
         print('Графики 7 дней готовы')    
         sleep(60 * 60) 
         
