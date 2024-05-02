@@ -64,5 +64,3 @@ def _(text, lang='ru'):
     else:
         return translations[text]
 
-async def get_lang(tg_id):
-    return await rq.get_localization(tg_id)       

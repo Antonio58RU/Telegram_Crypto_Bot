@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import datetime
 from time import sleep
+from pytz import timezone
 
 crypto_list = ['BTC', 'ETH', 'SOL', 'USDC', 'HBAR', 'FDUSD', 'PEPE', 'BNB', 'DOGE', 'XRP']
+utc_offset = 3  # Смещение времени в часах
 
 def get_historical_data(symbol):
     url = 'https://min-api.cryptocompare.com/data/v2/histominute'
@@ -26,6 +28,7 @@ def get_historical_data(symbol):
             for item in data['Data']['Data']:
                 # Преобразуем временную метку в удобный формат времени
                 timestamp = item['time']
+                timestamp += utc_offset * 3600  # Добавляем смещение к временной метке
                 time_str = datetime.datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
                 prices[time_str] = item['close']  # Добавляем цену в словарь с ключом времени
             return prices
