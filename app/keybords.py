@@ -89,6 +89,6 @@ def settingsCmdIn(lang):
 def payIn(PRICE, payment_url, payment_id, lang):
     payIn = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=_('Оплатить {}р'.format(PRICE), lang), url=payment_url),
                                                            InlineKeyboardButton(text=_('Проверить оплату', lang),callback_data=f'check_{payment_id}')],
-                                                          [InlineKeyboardButton(text=_('Назад', lang),callback_data='backProfil')]])
+                                                          [InlineKeyboardButton(text=_('👈 Назад', lang),callback_data='backProfil')]])
     
     return payIn

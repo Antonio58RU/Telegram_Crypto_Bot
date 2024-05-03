@@ -7,7 +7,7 @@ import app.keybords as kb
 import database.requests as rq
 
 from translations import _
-import requests 
+import aiohttp
 
 from translations import _
 
@@ -119,8 +119,11 @@ async def graphic7_two(message: Message, state: FSMContext):
 async def get_messageStatsFull(crypto_name, message: Message):
     
     
-    r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD')
-    json_data = r.json()
+    url = f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            json_data = await response.json()
+            
     lang = rq.get_localization(message.from_user.id)
     try:
         imageUrl = json_data["RAW"][crypto_name]["USD"]["IMAGEURL"]

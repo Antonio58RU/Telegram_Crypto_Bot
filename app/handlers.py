@@ -23,13 +23,11 @@ async def handle_stats(message_or_callback, state: FSMContext):
         # Обработка сообщения
         await state.clear()
         message = message_or_callback
-        # Ваш код для обработки сообщения
         lang = await rq.get_localization(message.from_user.id)
         await message.answer(await get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
     elif isinstance(message_or_callback, CallbackQuery):
         # Обработка коллбэка
         callback = message_or_callback
-        # Ваш код для обработки коллбэка
         await callback.answer('')
         lang = await rq.get_localization(callback.from_user.id)
         await callback.message.answer(await get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
@@ -57,11 +55,20 @@ async def get_cryptoList(callback: CallbackQuery):
     await callback.message.answer(result,reply_markup=kb.backStatsIn(lang) , parse_mode='html')
        
 @router.message((F.text == '💼 Профиль') | (F.text == '💼 Profile'))
-async def get_statsProfil(message: Message, state: FSMContext):
-    await state.clear()
-    user = await rq.get_user(message.from_user.id)
-    await message.answer(_(get_profilStats(), user.language).format(message.from_user.full_name, _(premiumStatus(user.premium), user.language), user.registr_date), reply_markup=kb.profileIn(user.language), parse_mode='html')
-
+@router.callback_query(F.data == 'backProfil')
+async def get_statsProfil(message_or_callback: Message, state: FSMContext):
+    if isinstance(message_or_callback, Message):
+        message = message_or_callback
+        await state.clear()
+        user = await rq.get_user(message.from_user.id)
+        await message.answer(_(get_profilStats(), user.language).format(message.from_user.full_name, _(premiumStatus(user.premium), user.language), user.registr_date), reply_markup=kb.profileIn(user.language), parse_mode='html')
+    elif isinstance(message_or_callback, CallbackQuery):
+        callback = message_or_callback
+        await callback.answer('')
+        user = await rq.get_user(callback.from_user.id)
+        await callback.message.answer(_(get_profilStats(), user.language).format(callback.from_user.full_name, _(premiumStatus(user.premium), user.language), user.registr_date), reply_markup=kb.profileIn(user.language), parse_mode='html')
+ 
+               
 @router.callback_query(F.data == 'settings')
 async def settings(callback: CallbackQuery):
     await callback.answer('')
@@ -84,11 +91,6 @@ async def set_language(callback: CallbackQuery):
     
     await callback.message.answer(text=message_text, reply_markup=kb.mainRp(lang), parse_mode='html') 
     
-@router.callback_query(F.data == 'backProfil')
-async def back_Profil(callback: CallbackQuery):
-    await callback.answer('')
-    user = await rq.get_user(callback.from_user.id)
-    await callback.message.answer(_(get_profilStats(), user.language).format(callback.from_user.full_name, _(premiumStatus(user.premium), user.language), user.registr_date), reply_markup=kb.profileIn(user.language), parse_mode='html')
  
 @router.callback_query(F.data == 'help')
 async def support(callback: CallbackQuery):
@@ -106,13 +108,27 @@ async def get_info(message: Message, state: FSMContext):
     await message.answer_photo(photo=photo, caption=_(text, lang), parse_mode='html')
   
 @router.message((F.text == '👑 Премиум функционал') | (F.text == '👑 Premium Functionality'))
-async def premium_func(message: Message, state: FSMContext):
-    await state.clear()
-    user = await rq.get_user(message.from_user.id)
-    if(user.premium == True):
-        await message.answer(_('👑 <b>Премиум функционал</b>', user.language), reply_markup=kb.premiumIn(user.language), parse_mode='html')
-    else:
-        await message.answer(_('Приобретите премиум доступ чтобы пользоваться данными функционалом', user.language), reply_markup=kb.premiumBuyIn(user.language))
+@router.callback_query(F.data == 'backPremium')
+async def premium_func(message_or_callback: Message, state: FSMContext):
+    if isinstance(message_or_callback, Message):
+        message = message_or_callback
+        await state.clear()
+        user = await rq.get_user(message.from_user.id)
+        if(user.premium == True):
+            await message.answer(_('👑 <b>Премиум функционал</b>', user.language), reply_markup=kb.premiumIn(user.language), parse_mode='html')
+        else:
+            await message.answer(_('Приобретите премиум доступ чтобы пользоваться данными функционалом', user.language), reply_markup=kb.premiumBuyIn(user.language))
+    elif isinstance(message_or_callback, CallbackQuery):
+        callback = message_or_callback
+        await callback.answer('')
+        user = await rq.get_user(callback.from_user.id)
+        if(user.premium == True):
+            await callback.message.answer(_('👑 <b>Премиум функционал</b>', user.language), reply_markup=kb.premiumIn(user.language), parse_mode='html')
+        else:
+            await callback.message.answer(_('Приобретите премиум доступ чтобы пользоваться данными функционалом', user.language), reply_markup=kb.premiumBuyIn(user.language))
+    
+   
+   
        
 @router.callback_query(F.data == 'buyPremium')
 async def buy_premium(callback: CallbackQuery):
@@ -140,15 +156,7 @@ async def check_handler(callback: CallbackQuery):
     await callback.answer()
  
              
-@router.callback_query(F.data == 'backPremium')
-async def backPremium(callback: CallbackQuery):
-    await callback.answer('')
-    user = await rq.get_user(callback.from_user.id)
-    if(user.premium == True):
-        await callback.message.answer(_('👑 <b>Премиум функционал</b>', user.language), reply_markup=kb.premiumIn(user.language), parse_mode='html')
-    else:
-        await callback.message.answer(_('Приобретите премиум доступ чтобы пользоваться данными функционалом', user.language), reply_markup=kb.premiumBuyIn(user.language))
-    
+
     
 def get_profilStats():
     return '<b>Логин:</b> {}\n<b>Статус:</b> {}\n<b>Зарегистрирован:</b> {}'
