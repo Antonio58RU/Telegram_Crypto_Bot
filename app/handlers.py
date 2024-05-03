@@ -1,13 +1,17 @@
 from aiogram import F, Router
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import Message, CallbackQuery, FSInputFile, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
-
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 import app.keybords as kb
 import database.requests as rq
 
 from translations import _
 import requests 
 
+from .payment import create, check
+
+import os
+from dotenv import load_dotenv
 
 router = Router()
      
@@ -122,8 +126,32 @@ async def buy_premium(callback: CallbackQuery):
     if(user.premium == True):
         await callback.message.answer(text=_('Вы уже приобрели премиум статус.', user.language))
     else:
+        load_dotenv()
+        PRICE = os.getenv('PRICE')
+        payment_url, payment_id = create(PRICE, callback.message.chat.id)
+
+        builder = InlineKeyboardBuilder()
+        builder.add(InlineKeyboardButton(
+            text='Оплатить {}р'.format(PRICE),
+            url=payment_url
+        ))
+        builder.add(InlineKeyboardButton(
+            text='Проверить оплату',
+            callback_data=f'check_{payment_id}'
+        ))
+
+        await callback.message.answer(f"Счет сформирован!", reply_markup=builder.as_markup())
+ 
+@router.callback_query(lambda c: 'check' in c.data)
+async def check_handler(callback: CallbackQuery):
+    result = check(callback.data.split('_')[-1])
+    if result:
         await rq.update_user_premium_status(callback.from_user.id)
-        await callback.message.answer(text=_('Премиум куплен!', await user.language))
+        await callback.message.answer('Оплата прошла успешно!')
+    else:
+        await callback.message.answer('Оплата еще не прошла или возникла ошибка')
+    await callback.answer()
+ 
              
 @router.callback_query(F.data == 'backPremium')
 async def backPremium(callback: CallbackQuery):
