@@ -17,7 +17,6 @@ router = Router()
      
 @router.message((F.text == '🏦 Статистика') | (F.text == '🏦 Statistics'))
 @router.callback_query(F.data == 'updateStats')
-@router.callback_query(F.data == 'backStatsFull')
 async def handle_stats(message_or_callback, state: FSMContext):
     if isinstance(message_or_callback, Message):
         # Обработка сообщения
@@ -28,6 +27,12 @@ async def handle_stats(message_or_callback, state: FSMContext):
     elif isinstance(message_or_callback, CallbackQuery):
         # Обработка коллбэка
         callback = message_or_callback
+        await callback.answer('')
+        lang = await rq.get_localization(callback.from_user.id)
+        await callback.message.edit_text(await get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
+
+@router.callback_query(F.data == 'backStatsFull')
+async def handle_stats(callback: CallbackQuery):
         await callback.answer('')
         lang = await rq.get_localization(callback.from_user.id)
         await callback.message.answer(await get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')

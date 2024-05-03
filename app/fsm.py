@@ -29,7 +29,7 @@ class CalculatorSt(StatesGroup):
 async def get_statsFull(callback: CallbackQuery, state: FSMContext):
     await callback.answer('')
     await state.set_state(StatsFullSt.nameCrypto)
-    lang = rq.get_localization(callback.from_user.id)
+    lang = await rq.get_localization(callback.from_user.id)
     await callback.message.answer(_('Введите название криптовалюты.', lang), parse_mode='html')
     
 @router.message(StatsFullSt.nameCrypto)
@@ -45,18 +45,20 @@ async def StatsFull_stats(message: Message, state: FSMContext):
 async def get_nameCrypto(callback: CallbackQuery, state: FSMContext):
     await callback.answer('')
     await state.set_state(CalculatorSt.name_and_amount)
-    lang = rq.get_localization(callback.from_user.id)
+    lang = await rq.get_localization(callback.from_user.id)
     await callback.message.answer(_('<b>Введите название криптовалюты и её количество\nчерез символ "-"</b>\nНапример - "BNB-3.54".', lang), parse_mode='html')
     
 @router.message(CalculatorSt.name_and_amount)
 async def get_nameCrypto_two(message: Message, state: FSMContext):
     await state.update_data(name_and_amount = message.text)
     data = await state.get_data()
-    lang = rq.get_localization(message.from_user.id)
+    lang = await rq.get_localization(message.from_user.id)
     try:
         crypto_name, crypto_value = data['name_and_amount'].split('-')
-        r = requests.get(f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD')
-        json_data = r.json()
+        url = f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD'
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                json_data = await response.json()
         price = json_data["RAW"][crypto_name]["USD"]["PRICE"]
         crypto_value = float(crypto_value)
     except:  
@@ -68,10 +70,9 @@ async def get_nameCrypto_two(message: Message, state: FSMContext):
     await state.clear()
 
 @router.callback_query(F.data == 'graphic')
-async def graphic24(callback: CallbackQuery, state: FSMContext):
+async def graphic24(callback: CallbackQuery):
     await callback.answer('')
-    await state.set_state(Graphic24St.nameCrypto)
-    lang = rq.get_localization(callback.from_user.id)
+    lang = await rq.get_localization(callback.from_user.id)
     await callback.message.answer(_('<b>Выберите график.</b>', lang), reply_markup=kb.graphic(lang) ,parse_mode='html')
 
 
@@ -79,7 +80,8 @@ async def graphic24(callback: CallbackQuery, state: FSMContext):
 async def graphic24(callback: CallbackQuery, state: FSMContext):
     await callback.answer('')
     await state.set_state(Graphic24St.nameCrypto)
-    await callback.message.answer(_('Введите название криптовалюты.', await get_lang(callback.from_user.id)), parse_mode='html')
+    lang = await rq.get_localization(callback.from_user.id)
+    await callback.message.answer(_('Введите название криптовалюты.', lang), parse_mode='html')
     
 @router.message(Graphic24St.nameCrypto)
 async def graphic24_two(message: Message, state: FSMContext):
@@ -87,7 +89,7 @@ async def graphic24_two(message: Message, state: FSMContext):
     data = await state.get_data()
     crypto_name = data['nameCrypto']
     photo = FSInputFile(f'Images/Graphic_Image24/{crypto_name}.png')
-    lang = rq.get_localization(message.from_user.id)
+    lang = await rq.get_localization(message.from_user.id)
     try:
         await message.answer_photo(photo=photo, caption=_('<b>График за 24 часа</b>', lang), reply_markup=kb.graphic24In(lang), parse_mode='html')
     except:
@@ -99,7 +101,7 @@ async def graphic24_two(message: Message, state: FSMContext):
 async def graphic7(callback: CallbackQuery, state: FSMContext):
     await callback.answer('')
     await state.set_state(Graphic7St.nameCrypto)
-    lang = rq.get_localization(callback.from_user.id)
+    lang = await rq.get_localization(callback.from_user.id)
     await callback.message.answer(_('Введите название криптовалюты.', lang), parse_mode='html')
     
 @router.message(Graphic7St.nameCrypto)
@@ -108,7 +110,7 @@ async def graphic7_two(message: Message, state: FSMContext):
     data = await state.get_data()
     crypto_name = data['nameCrypto']
     photo = FSInputFile(f'Images/Graphic_Image7/{crypto_name}.png')
-    lang = rq.get_localization(message.from_user.id)   
+    lang = await rq.get_localization(message.from_user.id)   
     try:
         await message.answer_photo(photo=photo, caption=_('<b>График за 7 дней</b>', lang), reply_markup=kb.graphic7In(lang), parse_mode='html')
     except:
@@ -124,7 +126,7 @@ async def get_messageStatsFull(crypto_name, message: Message):
         async with session.get(url) as response:
             json_data = await response.json()
             
-    lang = rq.get_localization(message.from_user.id)
+    lang = await rq.get_localization(message.from_user.id)
     try:
         imageUrl = json_data["RAW"][crypto_name]["USD"]["IMAGEURL"]
         imageUrl = f'https://www.cryptocompare.com/{imageUrl}'
