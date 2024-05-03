@@ -6,7 +6,7 @@ import app.keybords as kb
 import database.requests as rq
 
 from translations import _
-import requests 
+import aiohttp
 
 from .payment import create, check
 
@@ -17,6 +17,7 @@ router = Router()
      
 @router.message((F.text == '🏦 Статистика') | (F.text == '🏦 Statistics'))
 @router.callback_query(F.data == 'updateStats')
+@router.callback_query(F.data == 'backStatsFull')
 async def handle_stats(message_or_callback, state: FSMContext):
     if isinstance(message_or_callback, Message):
         # Обработка сообщения
@@ -24,14 +25,14 @@ async def handle_stats(message_or_callback, state: FSMContext):
         message = message_or_callback
         # Ваш код для обработки сообщения
         lang = await rq.get_localization(message.from_user.id)
-        await message.answer(get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
+        await message.answer(await get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
     elif isinstance(message_or_callback, CallbackQuery):
         # Обработка коллбэка
         callback = message_or_callback
         # Ваш код для обработки коллбэка
         await callback.answer('')
         lang = await rq.get_localization(callback.from_user.id)
-        await callback.message.edit_text(get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
+        await callback.message.answer(await get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
 
 @router.callback_query(F.data == 'listcrypto')
 async def get_cryptoList(callback: CallbackQuery):
@@ -55,12 +56,6 @@ async def get_cryptoList(callback: CallbackQuery):
         result += f"<b>{currency}</b>({symbol})\n"
     await callback.message.answer(result,reply_markup=kb.backStatsIn(lang) , parse_mode='html')
        
-@router.callback_query(F.data == 'backStatsFull')
-async def back_statsFull(callback: CallbackQuery):
-    await callback.answer('')
-    lang = await rq.get_localization(callback.from_user.id) 
-    await callback.message.answer(get_messageStats(), reply_markup=kb.mainIn(lang), parse_mode='html')
-
 @router.message((F.text == '💼 Профиль') | (F.text == '💼 Profile'))
 async def get_statsProfil(message: Message, state: FSMContext):
     await state.clear()
@@ -99,7 +94,7 @@ async def back_Profil(callback: CallbackQuery):
 async def support(callback: CallbackQuery):
     await callback.answer('')
     lang = await rq.get_localization(callback.from_user.id) 
-    await callback.message.answer(text=_('/start - Запуск бота\n/settings - Настройки\n/help Помощь\n\nhttps://t.me/AntonBog123', lang), reply_markup=kb.backProfilIn(lang))
+    await callback.message.answer(text=_('<b>🚀 Вы можете использовать следующие команды:</b>\n\n/start - Запуск бота\n/settings - Настройки\n/help - Помощь\n\nЕсли у вас возникли вопросы или нужна помощь, не стесняйтесь обращаться к нам! 😊\nhttps://t.me/AntonBog123\n\nУдачного использования! 💫', lang), reply_markup=kb.backProfilIn(lang), parse_mode='html')
         
 @router.message((F.text == '📕 О сервисе') | (F.text == '📕 About the Service'))
 async def get_info(message: Message, state: FSMContext):
@@ -123,33 +118,25 @@ async def premium_func(message: Message, state: FSMContext):
 async def buy_premium(callback: CallbackQuery):
     await callback.answer('')
     user = await rq.get_user(callback.from_user.id)
+    lang = user.language
     if(user.premium == True):
-        await callback.message.answer(text=_('Вы уже приобрели премиум статус.', user.language))
+        await callback.message.answer(text=_('Вы уже приобрели премиум статус.', lang))
     else:
         load_dotenv()
         PRICE = os.getenv('PRICE')
         payment_url, payment_id = create(PRICE, callback.message.chat.id)
 
-        builder = InlineKeyboardBuilder()
-        builder.add(InlineKeyboardButton(
-            text='Оплатить {}р'.format(PRICE),
-            url=payment_url
-        ))
-        builder.add(InlineKeyboardButton(
-            text='Проверить оплату',
-            callback_data=f'check_{payment_id}'
-        ))
-
-        await callback.message.answer(f"Счет сформирован!", reply_markup=builder.as_markup())
+        await callback.message.answer(_("<b>Счет сформирован!</b>", lang), reply_markup=kb.payIn(PRICE, payment_url, payment_id, lang), parse_mode='html')
  
 @router.callback_query(lambda c: 'check' in c.data)
 async def check_handler(callback: CallbackQuery):
     result = check(callback.data.split('_')[-1])
+    lang = await rq.get_localization(callback.from_user.id)
     if result:
         await rq.update_user_premium_status(callback.from_user.id)
-        await callback.message.answer('Оплата прошла успешно!')
+        await callback.message.answer(_('Оплата прошла успешно!', lang))
     else:
-        await callback.message.answer('Оплата еще не прошла или возникла ошибка')
+        await callback.message.answer(_('Оплата еще не прошла или возникла ошибка', lang))
     await callback.answer()
  
              
@@ -166,14 +153,15 @@ async def backPremium(callback: CallbackQuery):
 def get_profilStats():
     return '<b>Логин:</b> {}\n<b>Статус:</b> {}\n<b>Зарегистрирован:</b> {}'
    
-def get_messageStats():
+async def get_messageStats():
     
     cryptocurrencies = ["BTC", "ETH", "USDT", "BNB", "SOL"]
     fsyms = ','.join(cryptocurrencies)
 
     url = f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={fsyms}&tsyms=USD'
-    r = requests.get(url)
-    json_data = r.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            json_data = await response.json()
 
     messageStats_text = "🏦<b>CryptoStats</b>\n\n"
 

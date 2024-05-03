@@ -50,6 +50,6 @@ if __name__ == '__main__':
 
 
     process_main.join()
-    process_gr24.join()
+    #process_gr24.join()
     #process_gr7.join()
     
