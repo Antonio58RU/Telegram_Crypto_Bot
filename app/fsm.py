@@ -14,7 +14,7 @@ from translations import _
 router = Router()
 
 class StatsFullSt(StatesGroup):
-    nameCrypto = State()
+    nameCrypto = State()  
 
 class Graphic24St(StatesGroup):
     nameCrypto = State()
@@ -120,7 +120,6 @@ async def graphic7_two(message: Message, state: FSMContext):
 
 async def get_messageStatsFull(crypto_name, message: Message):
     
-    
     url = f'https://min-api.cryptocompare.com/data/pricemultifull?fsyms={crypto_name}&tsyms=USD'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -141,7 +140,17 @@ async def get_messageStatsFull(crypto_name, message: Message):
     except:
         await message.answer(_('Некорректные данные, повторите ввод!', lang))
 
-    messageStatsFull_text = _('<b>Изображение криптовалюты:</b>\n\n<b>Название: </b>{}\n<b>Маркет: </b>{}\n<b>Цена: </b>{}$\n<b>Обьём торгов за 24ч: </b>{}$\n<b>Изменение за 1ч: </b>{}%\n<b>Изменение за 24ч: </b>{}%\n<b>Максимальная цена за 24ч: </b>{}$\n<b>Минимальная цена за 24ч: </b>{}$', lang).format(fromsymbol, market, price, toptiervolume24hourto, changeday, change24h, highday, lowday)
-    
+    messageStatsFull_text = _('<b>Изображение криптовалюты:</b>\n\n'
+                         '<b>Название: </b>{}\n'
+                         '<b>Маркет: </b>{}\n'
+                         '<b>Цена: </b>{}$\n'
+                         '<b>Объём торгов за 24ч: </b>{}$\n'
+                         '<b>Изменение за 1ч: </b>{}%\n'
+                         '<b>Изменение за 24ч: </b>{}%\n'
+                         '<b>Максимальная цена за 24ч: </b>{}$\n'
+                         '<b>Минимальная цена за 24ч: </b>{}$',
+                         lang).format(fromsymbol, market, price, 
+                                      toptiervolume24hourto, changeday, 
+                                      change24h, highday, lowday)
     
     await message.answer_photo(photo=imageUrl, caption= messageStatsFull_text, reply_markup=kb.statsFullIn(lang), parse_mode='html')

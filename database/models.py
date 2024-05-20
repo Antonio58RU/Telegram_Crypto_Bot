@@ -22,9 +22,6 @@ class User(Base):
     registr_date: Mapped[str] = mapped_column(String(15))
     language: Mapped[str] = mapped_column(String(5), default='ru')
     
-
-    
-    
 async def async_main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
