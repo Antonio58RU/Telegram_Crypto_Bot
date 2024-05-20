@@ -1,9 +1,12 @@
-import yookassa
-from yookassa import Payment
-import uuid
+
 from dotenv import load_dotenv
 import os
 
+
+
+import yookassa
+from yookassa import Payment
+import uuid
 load_dotenv()
 yookassa.Configuration.account_id = os.getenv('ACCOUNT_ID')
 yookassa.Configuration.secret_key = os.getenv('SECRET_KEY')
